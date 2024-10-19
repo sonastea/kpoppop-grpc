@@ -2,19 +2,9 @@ syntax = "proto3";
 
 package kpoppop.messages.v1;
 
-option go_package = "github.com/sonastea/kpoppop-grpc/api/go/messages/v1";
+option go_package = "github.com/sonastea/kpoppop-grpc/ipc/go";
 
 import "google/protobuf/timestamp.proto";
-
-service MessageService {
-  rpc Connect(ConnectRequest) returns (stream Message);
-  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
-  rpc GetConversations(GetConversationsRequest)
-      returns (GetConversationsResponse);
-  rpc MarkAsRead(MarkAsReadRequest) returns (MarkAsReadResponse);
-}
-
-message ConnectRequest { int32 user_id = 1; }
 
 message Message {
   string convid = 1;
@@ -25,17 +15,6 @@ message Message {
   bool from_self = 6;
   bool read = 7;
 }
-
-message SendMessageRequest { Message message = 1; }
-
-message SendMessageResponse {
-  bool success = 1;
-  Message message = 2;
-}
-
-message GetConversationsRequest { int32 user_id = 1; }
-
-message GetConversationsResponse { repeated Conversation conversations = 1; }
 
 message Conversation {
   int32 id = 1;
@@ -48,14 +27,26 @@ message Conversation {
   int32 unread = 8;
 }
 
-message MarkAsReadRequest {
-  string convid = 1;
-  int32 to = 2;
+message ConversationsResponse { repeated Conversation conversations = 1; }
+
+message ContentMarkAsRead {
+  string convid = 1; // Conversation ID
+  int32 to = 2;      // Recipient ID
 }
 
-message MarkAsReadResponse {
-  string convid = 1;
-  int32 to = 2;
-  int32 unread = 3;
-  bool read = 4;
+message ContentMarkAsReadResponse {
+  string convid = 1; // Conversation ID
+  int32 to = 2;      // Recipient ID
+  int32 unread = 3;  // Number of unread messages remaining
+  bool read = 4;     // Whether the messages are marked as read
+}
+
+message EventMessage {
+  string event = 1; // Type of event (e.g., "CONNECT", "CONVERSATIONS")
+  string content =
+      2; // Content of the event (e.g., JSON or Protobuf serialized data)
+}
+
+message ConnectRequest {
+  int32 user_id = 1; // User ID
 }

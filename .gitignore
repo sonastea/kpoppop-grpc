@@ -1,0 +1,9 @@
+.vscode
+node_modules
+
+*.out
+
+go.work
+go.work.sum
+
+.env

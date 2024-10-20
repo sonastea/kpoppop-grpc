@@ -3,7 +3,7 @@
 GO_MODULE_NAME="github.com/sonastea/kpoppop-grpc/ipc/go"
 GO_OUT_DIR="./ipc/go"
 
-TS_PROTOC_PLUGIN="./node_modules/.bin/protoc-gen-ts"
+TS_PROTOC_PLUGIN="./node_modules/.bin/protoc-gen-ts_proto"
 TS_OUT_DIR="./ipc/ts"
 
 mkdir -p $GO_OUT_DIR
@@ -18,8 +18,8 @@ protoc -I ./proto \
 
 echo "Generating typescript stub files..."
 protoc -I ./proto \
-  --plugin="protoc-gen-ts=$TS_PROTOC_PLUGIN" \
-  --ts_out="$TS_OUT_DIR" \
+  --plugin="$TS_PROTOC_PLUGIN" \
+  --ts_proto_out="$TS_OUT_DIR" \
   messages.proto
 
 if [ ! -f "$GO_OUT_DIR/go.mod" ]; then

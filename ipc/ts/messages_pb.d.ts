@@ -4,6 +4,30 @@
 import * as jspb from "google-protobuf";
 import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
 
+export class EventMessage extends jspb.Message {
+  getEvent(): string;
+  setEvent(value: string): void;
+
+  getContent(): string;
+  setContent(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): EventMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: EventMessage): EventMessage.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: EventMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): EventMessage;
+  static deserializeBinaryFromReader(message: EventMessage, reader: jspb.BinaryReader): EventMessage;
+}
+
+export namespace EventMessage {
+  export type AsObject = {
+    event: string,
+    content: string,
+  }
+}
+
 export class Message extends jspb.Message {
   getConvid(): string;
   setConvid(value: string): void;
@@ -102,23 +126,23 @@ export namespace Conversation {
   }
 }
 
-export class ConversationsResponse extends jspb.Message {
+export class ContentConversationsResponse extends jspb.Message {
   clearConversationsList(): void;
   getConversationsList(): Array<Conversation>;
   setConversationsList(value: Array<Conversation>): void;
   addConversations(value?: Conversation, index?: number): Conversation;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): ConversationsResponse.AsObject;
-  static toObject(includeInstance: boolean, msg: ConversationsResponse): ConversationsResponse.AsObject;
+  toObject(includeInstance?: boolean): ContentConversationsResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: ContentConversationsResponse): ContentConversationsResponse.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: ConversationsResponse, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): ConversationsResponse;
-  static deserializeBinaryFromReader(message: ConversationsResponse, reader: jspb.BinaryReader): ConversationsResponse;
+  static serializeBinaryToWriter(message: ContentConversationsResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ContentConversationsResponse;
+  static deserializeBinaryFromReader(message: ContentConversationsResponse, reader: jspb.BinaryReader): ContentConversationsResponse;
 }
 
-export namespace ConversationsResponse {
+export namespace ContentConversationsResponse {
   export type AsObject = {
     conversationsList: Array<Conversation.AsObject>,
   }
@@ -177,50 +201,6 @@ export namespace ContentMarkAsReadResponse {
     to: number,
     unread: number,
     read: boolean,
-  }
-}
-
-export class EventMessage extends jspb.Message {
-  getEvent(): string;
-  setEvent(value: string): void;
-
-  getContent(): string;
-  setContent(value: string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): EventMessage.AsObject;
-  static toObject(includeInstance: boolean, msg: EventMessage): EventMessage.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: EventMessage, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): EventMessage;
-  static deserializeBinaryFromReader(message: EventMessage, reader: jspb.BinaryReader): EventMessage;
-}
-
-export namespace EventMessage {
-  export type AsObject = {
-    event: string,
-    content: string,
-  }
-}
-
-export class ConnectRequest extends jspb.Message {
-  getUserId(): number;
-  setUserId(value: number): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): ConnectRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: ConnectRequest): ConnectRequest.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: ConnectRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): ConnectRequest;
-  static deserializeBinaryFromReader(message: ConnectRequest, reader: jspb.BinaryReader): ConnectRequest;
-}
-
-export namespace ConnectRequest {
-  export type AsObject = {
-    userId: number,
   }
 }
 

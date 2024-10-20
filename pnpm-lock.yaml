@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@bufbuild/protobuf':
+        specifier: ^2.2.0
+        version: 2.2.0
       google-protobuf:
         specifier: ^3.21.4
         version: 3.21.4

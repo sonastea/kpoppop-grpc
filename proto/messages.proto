@@ -6,43 +6,69 @@ option go_package = "github.com/sonastea/kpoppop-grpc/ipc/go";
 
 import "google/protobuf/timestamp.proto";
 
-message EventMessage {
-  string event = 1; // Type of event (e.g., "CONNECT", "CONVERSATIONS")
-  string content =
-  2; // Content of the event (e.g., JSON or Protobuf serialized data)
+enum EventType
+{
+    UNKNOWN_TYPE  = 0;
+    CONNECT       = 1;
+    CONVERSATIONS = 2;
+    MARK_AS_READ  = 3;
 }
 
-message Message {
-  string convid = 1;
-  int32 to = 2;
-  int32 from = 3;
-  string content = 4;
-  google.protobuf.Timestamp created_at = 5;
-  bool from_self = 6;
-  bool read = 7;
+message EventMessage
+{
+    EventType event = 1;
+    oneof content
+    {
+        ContentConnectResponse       content       = 2;
+        ContentConversationsResponse conversations = 3;
+        ContentMarkAsRead            content       = 4;
+        ContentMarkAsReadResponse    content       = 5;
+    }
 }
 
-message Conversation {
-  int32 id = 1;
-  string convid = 2;
-  string username = 3;
-  string displayname = 4;
-  optional string photo = 5;
-  string status = 6;
-  repeated Message messages = 7;
-  int32 unread = 8;
+message Message
+{
+    string                    convid     = 1;
+    int32                     to         = 2;
+    int32                     from       = 3;
+    string                    content    = 4;
+    google.protobuf.Timestamp created_at = 5;
+    bool                      from_self  = 6;
+    bool                      read       = 7;
 }
 
-message ContentConversationsResponse { repeated Conversation conversations = 1; }
-
-message ContentMarkAsRead {
-  string convid = 1; // Conversation ID
-  int32 to = 2;      // Recipient ID
+message Conversation
+{
+    int32            id          = 1;
+    string           convid      = 2;
+    string           username    = 3;
+    string           displayname = 4;
+    optional string  photo       = 5;
+    string           status      = 6;
+    repeated Message messages    = 7;
+    int32            unread      = 8;
 }
 
-message ContentMarkAsReadResponse {
-  string convid = 1; // Conversation ID
-  int32 to = 2;      // Recipient ID
-  int32 unread = 3;  // Number of unread messages remaining
-  bool read = 4;     // Whether the messages are marked as read
+message ContentConnectResponse
+{
+    string content = 1;
+}
+
+message ContentConversationsResponse
+{
+    repeated Conversation conversations = 1;
+}
+
+message ContentMarkAsRead
+{
+    string convid = 1;  // Conversation ID
+    int32  to     = 2;  // Recipient ID
+}
+
+message ContentMarkAsReadResponse
+{
+    string convid = 1;  // Conversation ID
+    int32  to     = 2;  // Recipient ID
+    int32  unread = 3;  // Number of unread messages remaining
+    bool   read   = 4;  // Whether the messages are marked as read
 }

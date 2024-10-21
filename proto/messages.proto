@@ -19,10 +19,10 @@ message EventMessage
     EventType event = 1;
     oneof content
     {
-        ContentConnectResponse       content       = 2;
+        ContentConnectResponse       resp_connect  = 2;
         ContentConversationsResponse conversations = 3;
-        ContentMarkAsRead            content       = 4;
-        ContentMarkAsReadResponse    content       = 5;
+        ContentMarkAsRead            req_read      = 4;
+        ContentMarkAsReadResponse    resp_read     = 5;
     }
 }
 

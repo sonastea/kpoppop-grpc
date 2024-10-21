@@ -10,11 +10,57 @@ import { Timestamp } from "./google/protobuf/timestamp";
 
 export const protobufPackage = "kpoppop.messages.v1";
 
+export enum EventType {
+  UNKNOWN_TYPE = 0,
+  CONNECT = 1,
+  CONVERSATIONS = 2,
+  MARK_AS_READ = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function eventTypeFromJSON(object: any): EventType {
+  switch (object) {
+    case 0:
+    case "UNKNOWN_TYPE":
+      return EventType.UNKNOWN_TYPE;
+    case 1:
+    case "CONNECT":
+      return EventType.CONNECT;
+    case 2:
+    case "CONVERSATIONS":
+      return EventType.CONVERSATIONS;
+    case 3:
+    case "MARK_AS_READ":
+      return EventType.MARK_AS_READ;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return EventType.UNRECOGNIZED;
+  }
+}
+
+export function eventTypeToJSON(object: EventType): string {
+  switch (object) {
+    case EventType.UNKNOWN_TYPE:
+      return "UNKNOWN_TYPE";
+    case EventType.CONNECT:
+      return "CONNECT";
+    case EventType.CONVERSATIONS:
+      return "CONVERSATIONS";
+    case EventType.MARK_AS_READ:
+      return "MARK_AS_READ";
+    case EventType.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 export interface EventMessage {
-  /** Type of event (e.g., "CONNECT", "CONVERSATIONS") */
-  event: string;
-  /** Content of the event (e.g., JSON or Protobuf serialized data) */
-  content: string;
+  event: EventType;
+  respConnect?: ContentConnectResponse | undefined;
+  conversations?: ContentConversationsResponse | undefined;
+  reqRead?: ContentMarkAsRead | undefined;
+  respRead?: ContentMarkAsReadResponse | undefined;
 }
 
 export interface Message {
@@ -36,6 +82,10 @@ export interface Conversation {
   status: string;
   messages: Message[];
   unread: number;
+}
+
+export interface ContentConnectResponse {
+  content: string;
 }
 
 export interface ContentConversationsResponse {
@@ -61,16 +111,25 @@ export interface ContentMarkAsReadResponse {
 }
 
 function createBaseEventMessage(): EventMessage {
-  return { event: "", content: "" };
+  return { event: 0, respConnect: undefined, conversations: undefined, reqRead: undefined, respRead: undefined };
 }
 
 export const EventMessage: MessageFns<EventMessage> = {
   encode(message: EventMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.event !== "") {
-      writer.uint32(10).string(message.event);
+    if (message.event !== 0) {
+      writer.uint32(8).int32(message.event);
     }
-    if (message.content !== "") {
-      writer.uint32(18).string(message.content);
+    if (message.respConnect !== undefined) {
+      ContentConnectResponse.encode(message.respConnect, writer.uint32(18).fork()).join();
+    }
+    if (message.conversations !== undefined) {
+      ContentConversationsResponse.encode(message.conversations, writer.uint32(26).fork()).join();
+    }
+    if (message.reqRead !== undefined) {
+      ContentMarkAsRead.encode(message.reqRead, writer.uint32(34).fork()).join();
+    }
+    if (message.respRead !== undefined) {
+      ContentMarkAsReadResponse.encode(message.respRead, writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -83,11 +142,11 @@ export const EventMessage: MessageFns<EventMessage> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.event = reader.string();
+          message.event = reader.int32() as any;
           continue;
         }
         case 2: {
@@ -95,7 +154,31 @@ export const EventMessage: MessageFns<EventMessage> = {
             break;
           }
 
-          message.content = reader.string();
+          message.respConnect = ContentConnectResponse.decode(reader, reader.uint32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.conversations = ContentConversationsResponse.decode(reader, reader.uint32());
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.reqRead = ContentMarkAsRead.decode(reader, reader.uint32());
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.respRead = ContentMarkAsReadResponse.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -109,18 +192,32 @@ export const EventMessage: MessageFns<EventMessage> = {
 
   fromJSON(object: any): EventMessage {
     return {
-      event: isSet(object.event) ? globalThis.String(object.event) : "",
-      content: isSet(object.content) ? globalThis.String(object.content) : "",
+      event: isSet(object.event) ? eventTypeFromJSON(object.event) : 0,
+      respConnect: isSet(object.respConnect) ? ContentConnectResponse.fromJSON(object.respConnect) : undefined,
+      conversations: isSet(object.conversations)
+        ? ContentConversationsResponse.fromJSON(object.conversations)
+        : undefined,
+      reqRead: isSet(object.reqRead) ? ContentMarkAsRead.fromJSON(object.reqRead) : undefined,
+      respRead: isSet(object.respRead) ? ContentMarkAsReadResponse.fromJSON(object.respRead) : undefined,
     };
   },
 
   toJSON(message: EventMessage): unknown {
     const obj: any = {};
-    if (message.event !== "") {
-      obj.event = message.event;
+    if (message.event !== 0) {
+      obj.event = eventTypeToJSON(message.event);
     }
-    if (message.content !== "") {
-      obj.content = message.content;
+    if (message.respConnect !== undefined) {
+      obj.respConnect = ContentConnectResponse.toJSON(message.respConnect);
+    }
+    if (message.conversations !== undefined) {
+      obj.conversations = ContentConversationsResponse.toJSON(message.conversations);
+    }
+    if (message.reqRead !== undefined) {
+      obj.reqRead = ContentMarkAsRead.toJSON(message.reqRead);
+    }
+    if (message.respRead !== undefined) {
+      obj.respRead = ContentMarkAsReadResponse.toJSON(message.respRead);
     }
     return obj;
   },
@@ -130,8 +227,19 @@ export const EventMessage: MessageFns<EventMessage> = {
   },
   fromPartial<I extends Exact<DeepPartial<EventMessage>, I>>(object: I): EventMessage {
     const message = createBaseEventMessage();
-    message.event = object.event ?? "";
-    message.content = object.content ?? "";
+    message.event = object.event ?? 0;
+    message.respConnect = (object.respConnect !== undefined && object.respConnect !== null)
+      ? ContentConnectResponse.fromPartial(object.respConnect)
+      : undefined;
+    message.conversations = (object.conversations !== undefined && object.conversations !== null)
+      ? ContentConversationsResponse.fromPartial(object.conversations)
+      : undefined;
+    message.reqRead = (object.reqRead !== undefined && object.reqRead !== null)
+      ? ContentMarkAsRead.fromPartial(object.reqRead)
+      : undefined;
+    message.respRead = (object.respRead !== undefined && object.respRead !== null)
+      ? ContentMarkAsReadResponse.fromPartial(object.respRead)
+      : undefined;
     return message;
   },
 };
@@ -460,6 +568,64 @@ export const Conversation: MessageFns<Conversation> = {
     message.status = object.status ?? "";
     message.messages = object.messages?.map((e) => Message.fromPartial(e)) || [];
     message.unread = object.unread ?? 0;
+    return message;
+  },
+};
+
+function createBaseContentConnectResponse(): ContentConnectResponse {
+  return { content: "" };
+}
+
+export const ContentConnectResponse: MessageFns<ContentConnectResponse> = {
+  encode(message: ContentConnectResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.content !== "") {
+      writer.uint32(10).string(message.content);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ContentConnectResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseContentConnectResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.content = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ContentConnectResponse {
+    return { content: isSet(object.content) ? globalThis.String(object.content) : "" };
+  },
+
+  toJSON(message: ContentConnectResponse): unknown {
+    const obj: any = {};
+    if (message.content !== "") {
+      obj.content = message.content;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ContentConnectResponse>, I>>(base?: I): ContentConnectResponse {
+    return ContentConnectResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ContentConnectResponse>, I>>(object: I): ContentConnectResponse {
+    const message = createBaseContentConnectResponse();
+    message.content = object.content ?? "";
     return message;
   },
 };

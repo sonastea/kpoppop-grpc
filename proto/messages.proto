@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package kpoppop.messages.v1;
 
-option go_package = "github.com/sonastea/kpoppop-grpc/ipc/go";
+option go_package = "github.com/sonastea/kpoppop-grpc/ipc/go;message";
 
 import "google/protobuf/timestamp.proto";
 

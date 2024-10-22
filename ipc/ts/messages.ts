@@ -6,7 +6,6 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Timestamp } from "./google/protobuf/timestamp";
 
 export const protobufPackage = "kpoppop.messages.v1";
 
@@ -68,7 +67,7 @@ export interface Message {
   to: number;
   from: number;
   content: string;
-  createdAt: Date | undefined;
+  createdAt: string;
   fromSelf: boolean;
   read: boolean;
 }
@@ -245,7 +244,7 @@ export const EventMessage: MessageFns<EventMessage> = {
 };
 
 function createBaseMessage(): Message {
-  return { convid: "", to: 0, from: 0, content: "", createdAt: undefined, fromSelf: false, read: false };
+  return { convid: "", to: 0, from: 0, content: "", createdAt: "", fromSelf: false, read: false };
 }
 
 export const Message: MessageFns<Message> = {
@@ -262,8 +261,8 @@ export const Message: MessageFns<Message> = {
     if (message.content !== "") {
       writer.uint32(34).string(message.content);
     }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(42).fork()).join();
+    if (message.createdAt !== "") {
+      writer.uint32(42).string(message.createdAt);
     }
     if (message.fromSelf !== false) {
       writer.uint32(48).bool(message.fromSelf);
@@ -318,7 +317,7 @@ export const Message: MessageFns<Message> = {
             break;
           }
 
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.createdAt = reader.string();
           continue;
         }
         case 6: {
@@ -352,7 +351,7 @@ export const Message: MessageFns<Message> = {
       to: isSet(object.to) ? globalThis.Number(object.to) : 0,
       from: isSet(object.from) ? globalThis.Number(object.from) : 0,
       content: isSet(object.content) ? globalThis.String(object.content) : "",
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
+      createdAt: isSet(object.createdAt) ? globalThis.String(object.createdAt) : "",
       fromSelf: isSet(object.fromSelf) ? globalThis.Boolean(object.fromSelf) : false,
       read: isSet(object.read) ? globalThis.Boolean(object.read) : false,
     };
@@ -372,8 +371,8 @@ export const Message: MessageFns<Message> = {
     if (message.content !== "") {
       obj.content = message.content;
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
+    if (message.createdAt !== "") {
+      obj.createdAt = message.createdAt;
     }
     if (message.fromSelf !== false) {
       obj.fromSelf = message.fromSelf;
@@ -393,7 +392,7 @@ export const Message: MessageFns<Message> = {
     message.to = object.to ?? 0;
     message.from = object.from ?? 0;
     message.content = object.content ?? "";
-    message.createdAt = object.createdAt ?? undefined;
+    message.createdAt = object.createdAt ?? "";
     message.fromSelf = object.fromSelf ?? false;
     message.read = object.read ?? false;
     return message;
@@ -887,28 +886,6 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
-
-function toTimestamp(date: Date): Timestamp {
-  const seconds = Math.trunc(date.getTime() / 1_000);
-  const nanos = (date.getTime() % 1_000) * 1_000_000;
-  return { seconds, nanos };
-}
-
-function fromTimestamp(t: Timestamp): Date {
-  let millis = (t.seconds || 0) * 1_000;
-  millis += (t.nanos || 0) / 1_000_000;
-  return new globalThis.Date(millis);
-}
-
-function fromJsonTimestamp(o: any): Date {
-  if (o instanceof globalThis.Date) {
-    return o;
-  } else if (typeof o === "string") {
-    return new globalThis.Date(o);
-  } else {
-    return fromTimestamp(Timestamp.fromJSON(o));
-  }
-}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

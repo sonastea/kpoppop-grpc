@@ -27,6 +27,6 @@ if [ ! -f "$GO_OUT_DIR/go.mod" ]; then
   (cd $GO_OUT_DIR && go mod init $GO_MODULE_NAME)
 fi
 
-(cd $GO_OUT_DIR  && go mod tidy)
+(cd $GO_OUT_DIR && go mod tidy)
 
 echo "Generation complete."

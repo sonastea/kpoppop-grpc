@@ -17,10 +17,10 @@ message EventMessage
     EventType event = 1;
     oneof content
     {
-        ContentConnectResponse       resp_connect  = 2;
-        ContentConversationsResponse conversations = 3;
-        ContentMarkAsRead            req_read      = 4;
-        ContentMarkAsReadResponse    resp_read     = 5;
+        ContentConnectResponse       resp_connect = 2;
+        ContentConversationsResponse resp_convos  = 3;
+        ContentMarkAsRead            req_read     = 4;
+        ContentMarkAsReadResponse    resp_read    = 5;
     }
 }
 

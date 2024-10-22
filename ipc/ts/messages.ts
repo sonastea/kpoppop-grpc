@@ -57,7 +57,7 @@ export function eventTypeToJSON(object: EventType): string {
 export interface EventMessage {
   event: EventType;
   respConnect?: ContentConnectResponse | undefined;
-  conversations?: ContentConversationsResponse | undefined;
+  respConvos?: ContentConversationsResponse | undefined;
   reqRead?: ContentMarkAsRead | undefined;
   respRead?: ContentMarkAsReadResponse | undefined;
 }
@@ -110,7 +110,7 @@ export interface ContentMarkAsReadResponse {
 }
 
 function createBaseEventMessage(): EventMessage {
-  return { event: 0, respConnect: undefined, conversations: undefined, reqRead: undefined, respRead: undefined };
+  return { event: 0, respConnect: undefined, respConvos: undefined, reqRead: undefined, respRead: undefined };
 }
 
 export const EventMessage: MessageFns<EventMessage> = {
@@ -121,8 +121,8 @@ export const EventMessage: MessageFns<EventMessage> = {
     if (message.respConnect !== undefined) {
       ContentConnectResponse.encode(message.respConnect, writer.uint32(18).fork()).join();
     }
-    if (message.conversations !== undefined) {
-      ContentConversationsResponse.encode(message.conversations, writer.uint32(26).fork()).join();
+    if (message.respConvos !== undefined) {
+      ContentConversationsResponse.encode(message.respConvos, writer.uint32(26).fork()).join();
     }
     if (message.reqRead !== undefined) {
       ContentMarkAsRead.encode(message.reqRead, writer.uint32(34).fork()).join();
@@ -161,7 +161,7 @@ export const EventMessage: MessageFns<EventMessage> = {
             break;
           }
 
-          message.conversations = ContentConversationsResponse.decode(reader, reader.uint32());
+          message.respConvos = ContentConversationsResponse.decode(reader, reader.uint32());
           continue;
         }
         case 4: {
@@ -193,9 +193,7 @@ export const EventMessage: MessageFns<EventMessage> = {
     return {
       event: isSet(object.event) ? eventTypeFromJSON(object.event) : 0,
       respConnect: isSet(object.respConnect) ? ContentConnectResponse.fromJSON(object.respConnect) : undefined,
-      conversations: isSet(object.conversations)
-        ? ContentConversationsResponse.fromJSON(object.conversations)
-        : undefined,
+      respConvos: isSet(object.respConvos) ? ContentConversationsResponse.fromJSON(object.respConvos) : undefined,
       reqRead: isSet(object.reqRead) ? ContentMarkAsRead.fromJSON(object.reqRead) : undefined,
       respRead: isSet(object.respRead) ? ContentMarkAsReadResponse.fromJSON(object.respRead) : undefined,
     };
@@ -209,8 +207,8 @@ export const EventMessage: MessageFns<EventMessage> = {
     if (message.respConnect !== undefined) {
       obj.respConnect = ContentConnectResponse.toJSON(message.respConnect);
     }
-    if (message.conversations !== undefined) {
-      obj.conversations = ContentConversationsResponse.toJSON(message.conversations);
+    if (message.respConvos !== undefined) {
+      obj.respConvos = ContentConversationsResponse.toJSON(message.respConvos);
     }
     if (message.reqRead !== undefined) {
       obj.reqRead = ContentMarkAsRead.toJSON(message.reqRead);
@@ -230,8 +228,8 @@ export const EventMessage: MessageFns<EventMessage> = {
     message.respConnect = (object.respConnect !== undefined && object.respConnect !== null)
       ? ContentConnectResponse.fromPartial(object.respConnect)
       : undefined;
-    message.conversations = (object.conversations !== undefined && object.conversations !== null)
-      ? ContentConversationsResponse.fromPartial(object.conversations)
+    message.respConvos = (object.respConvos !== undefined && object.respConvos !== null)
+      ? ContentConversationsResponse.fromPartial(object.respConvos)
       : undefined;
     message.reqRead = (object.reqRead !== undefined && object.reqRead !== null)
       ? ContentMarkAsRead.fromPartial(object.reqRead)

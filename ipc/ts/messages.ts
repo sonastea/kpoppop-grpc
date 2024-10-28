@@ -66,7 +66,7 @@ export interface Message {
   convid: string;
   to: number;
   from: number;
-  content: string;
+  content?: string | undefined;
   createdAt: string;
   fromSelf: boolean;
   read: boolean;
@@ -242,7 +242,7 @@ export const EventMessage: MessageFns<EventMessage> = {
 };
 
 function createBaseMessage(): Message {
-  return { convid: "", to: 0, from: 0, content: "", createdAt: "", fromSelf: false, read: false };
+  return { convid: "", to: 0, from: 0, content: undefined, createdAt: "", fromSelf: false, read: false };
 }
 
 export const Message: MessageFns<Message> = {
@@ -256,7 +256,7 @@ export const Message: MessageFns<Message> = {
     if (message.from !== 0) {
       writer.uint32(24).int32(message.from);
     }
-    if (message.content !== "") {
+    if (message.content !== undefined) {
       writer.uint32(34).string(message.content);
     }
     if (message.createdAt !== "") {
@@ -348,7 +348,7 @@ export const Message: MessageFns<Message> = {
       convid: isSet(object.convid) ? globalThis.String(object.convid) : "",
       to: isSet(object.to) ? globalThis.Number(object.to) : 0,
       from: isSet(object.from) ? globalThis.Number(object.from) : 0,
-      content: isSet(object.content) ? globalThis.String(object.content) : "",
+      content: isSet(object.content) ? globalThis.String(object.content) : undefined,
       createdAt: isSet(object.createdAt) ? globalThis.String(object.createdAt) : "",
       fromSelf: isSet(object.fromSelf) ? globalThis.Boolean(object.fromSelf) : false,
       read: isSet(object.read) ? globalThis.Boolean(object.read) : false,
@@ -366,7 +366,7 @@ export const Message: MessageFns<Message> = {
     if (message.from !== 0) {
       obj.from = Math.round(message.from);
     }
-    if (message.content !== "") {
+    if (message.content !== undefined) {
       obj.content = message.content;
     }
     if (message.createdAt !== "") {
@@ -389,7 +389,7 @@ export const Message: MessageFns<Message> = {
     message.convid = object.convid ?? "";
     message.to = object.to ?? 0;
     message.from = object.from ?? 0;
-    message.content = object.content ?? "";
+    message.content = object.content ?? undefined;
     message.createdAt = object.createdAt ?? "";
     message.fromSelf = object.fromSelf ?? false;
     message.read = object.read ?? false;

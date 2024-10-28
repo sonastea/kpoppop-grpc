@@ -40,7 +40,7 @@ message Conversation
     int32            id          = 1;
     string           convid      = 2;
     string           username    = 3;
-    string           displayname = 4;
+    optional string  displayname = 4;
     optional string  photo       = 5;
     string           status      = 6;
     repeated Message messages    = 7;

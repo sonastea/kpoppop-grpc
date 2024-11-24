@@ -72,4 +72,5 @@ message ContentMarkAsReadResponse
     int32  to     = 2;  // Recipient ID
     int32  unread = 3;  // Number of unread messages remaining
     bool   read   = 4;  // Whether the messages are marked as read
+    int32  from   = 5;  // Sender ID
 }

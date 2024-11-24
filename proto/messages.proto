@@ -15,7 +15,7 @@ enum EventType
 message EventMessage
 {
     EventType event = 1;
-    oneof content
+    oneof     content
     {
         ContentConnectResponse       resp_connect = 2;
         ContentConversationsResponse resp_convos  = 3;
@@ -33,6 +33,8 @@ message Message
     string          created_at = 5;
     bool            from_self  = 6;
     bool            read       = 7;
+    optional string fromUser   = 8;
+    optional string fromPhoto  = 9;
 }
 
 message Conversation
@@ -61,6 +63,7 @@ message ContentMarkAsRead
 {
     string convid = 1;  // Conversation ID
     int32  to     = 2;  // Recipient ID
+    int32  from   = 3;  // Sender ID
 }
 
 message ContentMarkAsReadResponse
